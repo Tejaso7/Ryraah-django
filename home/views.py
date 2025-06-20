@@ -32,35 +32,37 @@ razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZOR
 
 
 def home(request):
-    categories = Category.objects.all()
-    items = Product.objects.all()[:4]
-    
-    banners = Banner.objects.filter(active_status=True)
-    reviews = Review.objects.select_related('user', 'product').all()
-    
-    usd_inr = fetch_inr_rate()  
+    try:
+        categories = Category.objects.all()
+        items = Product.objects.all()[:4]
+        
+        banners = Banner.objects.filter(active_status=True)
+        reviews = Review.objects.select_related('user', 'product').all()
+        
+        usd_inr = fetch_inr_rate()  
 
-    if isinstance(usd_inr, str):  
-        return render(request, "home.html", {"error": "INR rate fetch failed!"})
-
-   
-    gold_24k = fetch_metal_rate("XAU")
-    silver_rate = fetch_metal_rate("XAG")
+        if isinstance(usd_inr, str):  
+            return render(request, "home.html", {"error": "INR rate fetch failed!"})
 
     
-    gold_22k = round(gold_24k * 0.916, 2) if isinstance(gold_24k, (int, float)) else "Error"
-    
-    return render(request, 'index.html', {
-        'categories': categories,
-        'items': items,
-        'banners': banners,
-        'reviews': reviews,
-        "gold_24k": gold_24k,
-        "gold_22k": gold_22k,
-        "silver_rate": silver_rate,
-        "usd_inr": usd_inr
-    })
+        gold_24k = fetch_metal_rate("XAU")
+        silver_rate = fetch_metal_rate("XAG")
 
+        
+        gold_22k = round(gold_24k * 0.916, 2) if isinstance(gold_24k, (int, float)) else "Error"
+        
+        return render(request, 'index.html', {
+            'categories': categories,
+            'items': items,
+            'banners': banners,
+            'reviews': reviews,
+            "gold_24k": gold_24k,
+            "gold_22k": gold_22k,
+            "silver_rate": silver_rate,
+            "usd_inr": usd_inr
+        })
+    except:
+        return render(request, 'index.html')
 
 
 
@@ -658,7 +660,7 @@ def subscribe(request):
                 <h2 style="color: #4CAF50;">Thank You for Subscribing! 🎉</h2>
                 <p>We appreciate you joining our newsletter. Stay tuned for exclusive updates, offers, and promotions.</p>
                 <p>💎 Get ready for the best deals on jewelry!</p>
-                <p style="margin-top: 20px;"><strong>Best Regards, <br> HariOm Team</strong></p>
+                <p style="margin-top: 20px;"><strong>Best Regards, <br> Ryraah Team</strong></p>
             </body>
             </html>
             """

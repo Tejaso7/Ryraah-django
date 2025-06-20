@@ -4,6 +4,8 @@
 # Hide virtual environment
 venv/
 
+.venv/
+
 # Hide Python cache files
 __pycache__/
 *.py[cod]

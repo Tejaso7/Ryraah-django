@@ -20,17 +20,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'os.getenv("SECRET_KEY")'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 ALLOWED_HOSTS = ['*']  # Later replace with Render URL
 
-ALLOWED_HOSTS = []
+# ALLOWED_HOSTS = []
 
 
 # settings.py
 
 EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
 EMAIL_HOST = os.getenv("EMAIL_HOST")
-EMAIL_PORT =  int(os.getenv("EMAIL_PORT"))
+# EMAIL_PORT =  int(os.getenv("EMAIL_PORT"))
 EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS") == 'True'
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER") 
 EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD") 
@@ -59,6 +59,7 @@ AUTHENTICATION_BACKEND=[
 ]
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -96,19 +97,24 @@ WSGI_APPLICATION = 'jewelry.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#             'default': dj_database_url.config(default='sqlite:///db.sqlite3'),
+#             'ENGINE': 'django.db.backends.mysql',
+#             'NAME': 'jewelryy',
+#             'USER': 'root',
+#             'PASSWORD': 'tiger123',
+#             'HOST': 'localhost',
+#             'PORT': '3306',
+#         }
+# }
+
 DATABASES = {
     'default': {
-            'default': dj_database_url.config(default='sqlite:///db.sqlite3'),
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'jewelryy',
-            'USER': 'root',
-            'PASSWORD': 'tiger123',
-            'HOST': 'localhost',
-            'PORT': '3306',
-        }
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
 }
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -146,8 +152,7 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT =[BASE_DIR/'static']
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
-
+ 
 
 import os
 
