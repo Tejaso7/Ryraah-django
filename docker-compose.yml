@@ -1,0 +1,50 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    command: gunicorn jewelry.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=jewelry.settings
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - rabbitmq
+      - celery
+    restart: always
+
+  celery:
+    build: .
+    command: celery -A jewelry worker --loglevel=info
+    volumes:
+      - .:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=jewelry.settings
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+    depends_on:
+      - rabbitmq
+    restart: always
+
+  celery-beat:
+    build: .
+    command: celery -A jewelry beat --loglevel=info
+    volumes:
+      - .:/app
+    environment:
+      - DJANGO_SETTINGS_MODULE=jewelry.settings
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq:5672//
+    depends_on:
+      - rabbitmq
+    restart: always
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
