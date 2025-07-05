@@ -8,7 +8,9 @@ WORKDIR /app
 RUN apt-get update \
     && apt-get install -y gcc libpq-dev build-essential curl libxml2-dev libxslt-dev libjpeg-dev zlib1g-dev wkhtmltopdf \
     && apt-get clean
-
+RUN apt-get update && \
+    apt-get install -y pkg-config libmysqlclient-dev && \
+    rm -rf /var/lib/apt/lists/*
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
