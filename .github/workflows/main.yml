@@ -8,6 +8,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -15,14 +16,20 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and push Docker image
+      - name: Log in to DockerHub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+      - name: Build and Push Docker Image
+        env:
+          DOCKERHUB_IMAGE: ${{ secrets.DOCKER_USERNAME }}/myapp:latest
+          ALT_IMAGE: pritvirajmagar/tejas-repo:latest
         run: |
           docker build -t myapp:latest .
-          echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
-          docker tag myapp:latest ${{ secrets.DOCKER_USERNAME }}/myapp:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/myapp:latest
-          docker tag myapp:latest pritvirajmagar/tejas-repo:tagname
-          docker push pritvirajmagar/tejas-repo:tagname
+          docker tag myapp:latest $DOCKERHUB_IMAGE
+          docker tag myapp:latest $ALT_IMAGE
+          docker push $DOCKERHUB_IMAGE
+          docker push $ALT_IMAGE
+
       - name: Deploy to server
         uses: appleboy/ssh-action@master
         with:
