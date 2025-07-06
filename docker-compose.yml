@@ -5,11 +5,17 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: gunicorn jewelry.wsgi:application --bind 0.0.0.0:8000
+    command: >
+      gunicorn jewelry.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - .:/app  # remove this in production
+      - type: bind
+        source: .
+        target: /app
     ports:
-      - "8000:8000"
+      - target: 8000
+        published: 8000
+        protocol: tcp
+        mode: host
     env_file:
       - .env
     depends_on:
@@ -21,9 +27,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: celery -A jewelry worker --loglevel=info
+    command: >
+      celery -A jewelry worker --loglevel=info
     volumes:
-      - .:/app  # remove this in production
+      - type: bind
+        source: .
+        target: /app
     env_file:
       - .env
     depends_on:
@@ -34,9 +43,12 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: celery -A jewelry beat --loglevel=info
+    command: >
+      celery -A jewelry beat --loglevel=info
     volumes:
-      - .:/app  # remove this in production
+      - type: bind
+        source: .
+        target: /app
     env_file:
       - .env
     depends_on:
@@ -46,9 +58,15 @@ services:
   rabbitmq:
     image: rabbitmq:3-management
     ports:
-      - "5672:5672"    # AMQP
-      - "15672:15672"  # Management UI
+      - target: 5672
+        published: 5672
+        protocol: tcp
+        mode: host
+      - target: 15672
+        published: 15672
+        protocol: tcp
+        mode: host
     environment:
-      RABBITMQ_DEFAULT_USER: guest
-      RABBITMQ_DEFAULT_PASS: guest
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
     restart: always
