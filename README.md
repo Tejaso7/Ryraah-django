@@ -4,6 +4,7 @@ An elegant and customizable online jewelry store built with Django. Users can br
 
 ---
 
+
 ## 🔥 Features
 
 - User registration & login
